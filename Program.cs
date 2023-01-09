@@ -50,7 +50,9 @@ public class Program
             //ListCategories(connection);
             // CreateCategory(connection);
             //ExecuteProcedure(connection);
-            ExecuteReadProcedure(connection);
+            //ExecuteReadProcedure(connection);
+            //ExecuteScalar(connection);
+            ReadView(connection); 
         }
     }
 
@@ -189,6 +191,51 @@ public class Program
         );
 
         foreach(var item in readRows)
+        {
+            Console.WriteLine($"{item.Id} - {item.Title}");
+        }
+    }
+
+    static void ExecuteScalar(SqlConnection connection)
+    {
+        var category = new Category();
+        category.Title = "Amazon AWS";
+        category.Url = "amazon";
+        category.Summary = "Categoria destinada a serviços do AWS";
+        category.Order = 8;
+        category.Description = "AWS Cloud";
+        category.Featured = false;
+
+        var insertSqlCategory = "INSERT INTO " +
+                                    "[Category]" +
+                                "OUTPUT inserted.[Id]" +
+                                "VALUES(" +
+                                    "NEWID()," +
+                                    "@Title," +
+                                    "@Url," +
+                                    "@Summary," +
+                                    "@Order," +
+                                    "@Description," +
+                                    "@Featured)";
+
+        var rowId = connection.ExecuteScalar<Guid>(insertSqlCategory, new
+        {
+            category.Title,
+            category.Url,
+            category.Summary,
+            category.Order,
+            category.Description,
+            category.Featured
+        });
+        Console.WriteLine($"Categoria inserida: {rowId}");
+    }
+
+    static void ReadView(SqlConnection connection)
+    {
+        var sqlView = "SELECT * FROM vwListaCursos";
+        var courses = connection.Query(sqlView);
+
+        foreach (var item in courses)
         {
             Console.WriteLine($"{item.Id} - {item.Title}");
         }
