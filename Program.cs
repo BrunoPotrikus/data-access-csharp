@@ -240,4 +240,20 @@ public class Program
             Console.WriteLine($"{item.Id} - {item.Title}");
         }
     }
+
+    static void OneToOne(SqlConnection connection)
+    {
+        var sql = "SELECT * FROM" +
+                    "[CareerItem]" +
+                  "INNER JOIN" +
+                    "[Course] ON [CareerItem].[CourseId] = [Course].[Id]";
+
+        var itens = connection.Query(sql);
+
+
+        foreach (var item in itens)
+        {
+            Console.WriteLine($"{item.Id} - {item.Title}");
+        }
+    }
 }
