@@ -47,9 +47,10 @@ public class Program
         {
             //UpdateCategory(connection);
             //CreateManyCategory(connection);
-            ListCategories(connection);
+            //ListCategories(connection);
             // CreateCategory(connection);
-            ExecuteProcedure(connection);
+            //ExecuteProcedure(connection);
+            ExecuteReadProcedure(connection);
         }
     }
 
@@ -175,5 +176,21 @@ public class Program
         );
 
         Console.WriteLine($"{affectedRows} linhas afetadas");
+    }
+
+    static void ExecuteReadProcedure(SqlConnection connection)
+    {
+        var sqlProcedure = "[spGetCourseByCategory]";
+        var parameters = new { CategoryId = "09ce0b7b-cfca-497b-92c0-3290ad9d5142" };
+        var readRows = connection.Query(
+            sqlProcedure,
+            parameters,
+            commandType: CommandType.StoredProcedure
+        );
+
+        foreach(var item in readRows)
+        {
+            Console.WriteLine($"{item.Id} - {item.Title}");
+        }
     }
 }
