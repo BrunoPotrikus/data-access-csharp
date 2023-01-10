@@ -56,7 +56,8 @@ public class Program
             //OneToOne(connection); 
             //OneToMany(connection);
             //QueryMultiple(connection);
-            SelectIn(connection);
+            //SelectIn(connection);
+            Like(connection); 
         }
     }
 
@@ -357,6 +358,26 @@ public class Program
         });
 
         foreach (var item in items)
+        {
+            Console.WriteLine(item.Title);
+        }
+    }
+
+    static void Like(SqlConnection connection)
+    {
+        var query = "SELECT * FROM" +
+                        "[Course]" +
+                    "WHERE" +
+                        "[Title]" +
+                    "LIKE " +
+                        "@exp";
+
+        var items = connection.Query<Course>(query, new
+        {
+            exp = "%backend%"
+        });
+
+        foreach(var item in items)
         {
             Console.WriteLine(item.Title);
         }
