@@ -57,7 +57,8 @@ public class Program
             //OneToMany(connection);
             //QueryMultiple(connection);
             //SelectIn(connection);
-            Like(connection); 
+            //Like(connection); 
+            Transaction(connection); 
         }
     }
 
@@ -380,6 +381,50 @@ public class Program
         foreach(var item in items)
         {
             Console.WriteLine(item.Title);
+        }
+    }
+
+    static void Transaction(SqlConnection connection)
+    {
+        var category = new Category();
+        category.Id = Guid.NewGuid();
+        category.Title = "Categoria para não salvar";
+        category.Url = "categoria-nao-salvar";
+        category.Summary = "Categoria não salva";
+        category.Order = 10;
+        category.Description = "Categoria não salva no banco";
+        category.Featured = false;
+
+        var query = "INSERT INTO " +
+                                    "[Category]" +
+                                "OUTPUT inserted.[Id]" +
+                                "VALUES(" +
+                                    "@Id," +
+                                    "@Title," +
+                                    "@Url," +
+                                    "@Summary," +
+                                    "@Order," +
+                                    "@Description," +
+                                    "@Featured)";
+
+        connection.Open();
+        using(var transaction = connection.BeginTransaction())
+        {
+            var rows = connection.Execute(query, new
+            {
+                category.Id,
+                category.Title,
+                category.Url,
+                category.Summary,
+                category.Order,
+                category.Description,
+                category.Featured
+            }, 
+            transaction);
+
+            //transaction.Rollback();
+            transaction.Commit();
+            Console.WriteLine($"{rows} linhas afetadas");
         }
     }
 }
